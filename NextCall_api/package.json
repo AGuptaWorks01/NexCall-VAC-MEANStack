@@ -4,8 +4,8 @@
   "description": "Real-Time Group Video/Audio Call Application. (Ex. Zoom, Teams)",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "nodemon server.js",
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
     "test": " Connect New Users, Group Video/Audio Call , Single Video/Audio Call )"
   },
   "repository": {
@@ -23,5 +23,10 @@
     "express"
   ],
   "author": "AGuptaWorks01",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "nodemon": "^3.1.10"
+  }
 }
