@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat</title>
+    <style>
+        #sendButton {
+            background-color: blue;
+            color: aliceblue;
+        }
+    </style>
+</head>
+
+<body>
+    <ul id="messages"></ul>
+
+    <!-- Username Input -->
+    <input id="usernameInput" placeholder="Enter your name" />
+
+    <!-- Message Input -->
+    <input id="messageInput" placeholder="Enter your message" autocomplete="off" />
+    <button id="sendButton">Send</button>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.2.0/socket.io.js"></script>
+    <script>
+        const socket = io();
+
+        const messages = document.getElementById('messages');
+        const usernameInput = document.getElementById('usernameInput');
+        const messageInput = document.getElementById('messageInput');
+        const sendButton = document.getElementById('sendButton');
+
+        function sendMessage ()
+        {
+            const username = usernameInput.value.trim();
+            const message = messageInput.value.trim();
+
+            if (!username) {
+                alert("Please enter your name first.");
+                return;
+            }
+
+            if (message !== '') {
+                socket.emit('chat message', { username, message });
+                messageInput.value = '';
+            }
+        }
+
+        sendButton.addEventListener('click', sendMessage);
+
+        document.addEventListener('keypress', (event) =>
+        {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        socket.on('chat message', (data) =>
+        {
+            const item = document.createElement('li');
+            item.textContent = `${data.username}: ${data.message}`;
+            messages.appendChild(item);
+        });
+    </script>
+</body>
+
+</html>

@@ -1,41 +1,49 @@
 nextcall_backend/
 │
-├── 📁 src/                          # All application logic lives here
-│   ├── 📁 config/                   # App-wide config (env, constants)
-│   │   └── socket.config.js
+├── 📁 src/
+│   ├── 📁 config/                   # Configuration files (env, constants, socket)
+│   │   ├── socket.config.js
+│   │   └── db.config.js            # (New) DB config (e.g., MongoDB or PostgreSQL)
 │   │
-│   ├── 📁 controllers/             # Business logic
-│   │   └── call.controller.js
+│   ├── 📁 controllers/             # Business logic (splitted by domain)
+│   │   ├── call.controller.js
+│   │   └── auth.controller.js      # (New) Login/Register logic
 │   │
-│   ├── 📁 routes/                  # REST API routes
-│   │   └── call.routes.js
+│   ├── 📁 routes/                  # API route definitions
+│   │   ├── call.routes.js
+│   │   └── auth.routes.js          # (New) Routes for login, register
 │   │
-│   ├── 📁 services/                # Service layer (abstracts controller logic)
-│   │   └── call.service.js
+│   ├── 📁 services/                # Service layer (handling data + logic)
+│   │   ├── call.service.js
+│   │   └── auth.service.js         # (New) Auth-specific logic (login/register, JWT)
 │   │
-│   ├── 📁 sockets/                 # Socket.io event handling
+│   ├── 📁 sockets/                 # Socket event listeners
 │   │   └── call.socket.js
 │   │
-│   ├── 📁 utils/                   # Reusable helper functions
-│   │   └── logger.js
+│   ├── 📁 utils/                   # Utility functions (e.g., logging, token, password hash)
+│   │   ├── logger.js
+│   │   ├── jwt.js                  # (New) JWT helpers (sign, verify, decode)
+│   │   └── hash.js                 # (New) Password hashing (bcrypt)
 │   │
-│   ├── 📁 middleware/             # Express middlewares (auth, error handling, etc.)
-│   │   └── errorHandler.js
+│   ├── 📁 middleware/             # Express middlewares
+│   │   ├── errorHandler.js
+│   │   └── auth.middleware.js      # (New) Auth guard (JWT check)
 │   │
-│   ├── 📁 models/                 # Database models (MongoDB, SQL, etc.)
-│   │   └── user.model.js
+│   ├── 📁 models/                 # Database models
+│   │   ├── user.model.js
+│   │   └── token.model.js          # (Optional) Store refresh tokens if needed
 │   │
-│   ├── 📁 validations/            # Joi or Zod schema validations
-│   │   └── call.validation.js
+│   ├── 📁 validations/            # Schema validations (Joi/Zod)
+│   │   ├── call.validation.js
+│   │   └── auth.validation.js      # (New) Validation for login/register input
 │   │
-│   ├── server.js                  # Entry point (creates Express app, Socket.io)
-│   └── app.js                     # Express app setup (middlewares, routes)
+│   ├── server.js                  # Entry point (http + socket server)
+│   └── app.js                     # Middleware, route, error setup
 │
-├── 📁 public/                      # Static files, if any (index.html, icons)
+├── 📁 public/                      # Static assets
+├── 📁 logs/                        # Logger output (optional)
 │
-├── 📁 logs/                        # Log files (if using a logger like Winston)
-│
-├── .env                            # Environment variables
-├── .gitignore                      # Git ignore rules
-├── package.json                    # Project metadata and dependencies
-└── README.md                       # Project documentation
+├── .env
+├── .gitignore
+├── package.json
+└── README.md
