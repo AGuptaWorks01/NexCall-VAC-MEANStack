@@ -47,3 +47,14 @@ nextcall_backend/
 ├── .gitignore
 ├── package.json
 └── README.md
+
+
+
+docker run -d --name my-mongo -p 27017:27017 mongo:latest
+
+
+docker build -t nextcall-node .
+
+
+
+docker run -d --name nextcall-app -p 3000:3000 --link my-mongo:mongo -e MONGO_URI="mongodb://mongo:27017/nextcalldb" nextcall-node

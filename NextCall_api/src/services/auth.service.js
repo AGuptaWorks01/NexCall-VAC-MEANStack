@@ -1,13 +1,13 @@
-const User = require('../models/user.model');
-const { hasdPassword, comparePassword } = require('../utils/hash')
-const { generateToken } = require('../utils/jwt')
+const User = require( '../models/user.model' );
+const { hasdPassword, comparePassword } = require( '../utils/hash' )
+const { generateToken } = require( '../utils/jwt' )
 
-exports.register = async ({ name, email, password }) => {
-    const existingUser = await User.findOne({ email })
-    if (existingUser) throw new Error("User already exists");
+exports.register = async ( { name, email, password } ) => {
+    const existingUser = await User.findOne( { email } )
+    if ( existingUser ) throw new Error( "User already exists" );
 
-    const hashedPassword = await hasdPassword(password)
-    const user = await User.create({ name, email, password: hashedPassword })
+    const hashedPassword = await hasdPassword( password )
+    const user = await User.create( { name, email, password: hashedPassword } )
 
     return {
         message: 'User registered successfully',
@@ -19,16 +19,23 @@ exports.register = async ({ name, email, password }) => {
     };
 }
 
-exports.login = async ({ email, password }) => {
-    const user = await User.findOne({ email })
-    console.log("user", user)
+exports.login = async ( { email, password } ) => {
+    const user = await User.findOne( { email } )
+    console.log( "user", user )
 
-    if (!user) throw new Error("Invalid credentails");
+    if ( !user ) throw new Error( "Invalid credentails" );
 
-    const match = await comparePassword(password, user.password)
-    console.log("match", match)
-    if (!match) throw new Error('Invalid credentials');
+    const match = await comparePassword( password, user.password )
+    console.log( "match", match )
+    if ( !match ) throw new Error( 'Invalid credentials' );
 
-    const token = generateToken({ userId: user.id })
+    const token = generateToken( { userId: user.id } )
     return { message: 'Login successful', token };
+}
+
+
+exports.getall = async () => {
+    const user = await User.find();
+    console.log( user );
+    return { message: 'Get all', user };
 }

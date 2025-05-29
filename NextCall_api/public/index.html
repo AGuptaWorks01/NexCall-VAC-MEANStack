@@ -2,6 +2,8 @@
 <html lang="en">
 
 <head>
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' https://cdnjs.cloudflare.com 'unsafe-inline'">
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat</title>
@@ -27,42 +29,42 @@
     <script>
         const socket = io();
 
-        const messages = document.getElementById('messages');
-        const usernameInput = document.getElementById('usernameInput');
-        const messageInput = document.getElementById('messageInput');
-        const sendButton = document.getElementById('sendButton');
+        const messages = document.getElementById( 'messages' );
+        const usernameInput = document.getElementById( 'usernameInput' );
+        const messageInput = document.getElementById( 'messageInput' );
+        const sendButton = document.getElementById( 'sendButton' );
 
         function sendMessage ()
         {
             const username = usernameInput.value.trim();
             const message = messageInput.value.trim();
 
-            if (!username) {
-                alert("Please enter your name first.");
+            if ( !username ) {
+                alert( "Please enter your name first." );
                 return;
             }
 
-            if (message !== '') {
-                socket.emit('chat message', { username, message });
+            if ( message !== '' ) {
+                socket.emit( 'chat message', { username, message } );
                 messageInput.value = '';
             }
         }
 
-        sendButton.addEventListener('click', sendMessage);
+        sendButton.addEventListener( 'click', sendMessage );
 
-        document.addEventListener('keypress', (event) =>
+        document.addEventListener( 'keypress', ( event ) =>
         {
-            if (event.key === 'Enter') {
+            if ( event.key === 'Enter' ) {
                 sendMessage();
             }
-        });
+        } );
 
-        socket.on('chat message', (data) =>
+        socket.on( 'chat message', ( data ) =>
         {
-            const item = document.createElement('li');
-            item.textContent = `${data.username}: ${data.message}`;
-            messages.appendChild(item);
-        });
+            const item = document.createElement( 'li' );
+            item.textContent = `${ data.username }: ${ data.message }`;
+            messages.appendChild( item );
+        } );
     </script>
 </body>
 
