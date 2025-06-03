@@ -28,6 +28,14 @@ app.use( cors( {
 app.use( express.json() );
 app.use( express.urlencoded( { extended: true } ) );
 
+app.use( ( req, res, next ) => {
+    res.setHeader(
+        'Content-Security-Policy',
+        "script-src 'seld';"
+    );
+    next()
+} )
+
 // Security HTTP headers with Helmet
 app.use( helmet() );
 

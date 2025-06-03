@@ -4,6 +4,7 @@ nextcall_backend/
 │   ├── 📁 config/                   # Configuration files (env, constants, socket)
 │   │   ├── socket.config.js
 │   │   └── db.config.js            # (New) DB config (e.g., MongoDB or PostgreSQL)
+│   │   └── passport-jwt.js            # (New) DB config (e.g., MongoDB or PostgreSQL)
 │   │
 │   ├── 📁 controllers/             # Business logic (splitted by domain)
 │   │   ├── call.controller.js
@@ -36,6 +37,10 @@ nextcall_backend/
 │   ├── 📁 validations/            # Schema validations (Joi/Zod)
 │   │   ├── call.validation.js
 │   │   └── auth.validation.js      # (New) Validation for login/register input
+│   │
+│   ├── 📁 docs/            # openAPi docs
+│   │   ├── swagger.doc.yaml
+│   │   └──
 │   │
 │   ├── server.js                  # Entry point (http + socket server)
 │   └── app.js                     # Middleware, route, error setup

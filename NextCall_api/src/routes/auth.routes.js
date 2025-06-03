@@ -8,6 +8,7 @@ const passport = require( 'passport' )
 router.post( '/register', validate.register, authController.register );
 router.post( '/login', validate.login, authController.login );
 router.get( '/get', authController.get );
+
 // router.get('/protected', authMiddleware, (req, res) => {
 //     res.json({ msg: 'This is a protected route', user: req.user });
 // });
