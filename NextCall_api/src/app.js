@@ -19,7 +19,7 @@ const app = express();
 
 // Enable Cross-Origin Resource Sharing (CORS)
 app.use( cors( {
-    origin: 'http://localhost:3000',
+    origin: '*',
     methods: [ 'GET', 'POST', 'PUT', 'DELETE' ],
     allowedHeaders: [ 'Content-Type', 'Authorization' ]
 } ) );
@@ -35,6 +35,9 @@ app.use( ( req, res, next ) => {
     );
     next()
 } )
+
+
+
 
 // Security HTTP headers with Helmet
 app.use( helmet() );

@@ -2,36 +2,62 @@ const User = require( '../models/user.model' );
 const { hasdPassword, comparePassword } = require( '../utils/hash' )
 const { generateToken } = require( '../utils/jwt' )
 
-exports.register = async ( { name, email, password } ) => {
+exports.register = async ( { username, email, password } ) => {
     const existingUser = await User.findOne( { email } )
-    if ( existingUser ) throw new Error( "User already exists" );
+
+    if ( existingUser )
+    {
+        const error = new Error( "User already exists" );
+        error.status = 400;
+        throw error;
+    }
 
     const hashedPassword = await hasdPassword( password )
-    const user = await User.create( { name, email, password: hashedPassword } )
+    const user = await User.create( { username, email, password: hashedPassword } )
 
     return {
         message: 'User registered successfully',
         user: {
             id: user.id,
-            name: user.name,
+            username: user.username,
             email: user.email
         }
     };
 }
 
 exports.login = async ( { email, password } ) => {
-    const user = await User.findOne( { email } )
-    console.log( "user", user )
+    const user = await User.findOne( { email } );
+    if ( !user )
+    {
+        const error = new Error( "Invalid email or password" );
+        error.status = 401;
+        throw error;
+    }
 
-    if ( !user ) throw new Error( "Invalid credentails" );
+    const isMatch = await comparePassword( password, user.password );
+    if ( !isMatch )
+    {
+        const error = new Error( "Invalid email or password" );
+        error.status = 401;
+        throw error;
+    }
 
-    const match = await comparePassword( password, user.password )
-    console.log( "match", match )
-    if ( !match ) throw new Error( 'Invalid credentials' );
+    // Plain object for JWT
+    const payload = {
+        id: user._id.toString(),
+        email: user.email,
+        username: user.username
+    };
 
-    const token = generateToken( { userId: user.id } )
-    return { message: 'Login successful', token };
-}
+    const token = generateToken( payload );
+
+    return {
+        message: "Login successful",
+        token,
+        user: payload
+    };
+};
+  
 
 
 exports.getall = async () => {
