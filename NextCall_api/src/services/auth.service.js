@@ -1,6 +1,7 @@
 const User = require( '../models/user.model' );
 const { hasdPassword, comparePassword } = require( '../utils/hash' )
 const { generateToken } = require( '../utils/jwt' )
+// const { v4: uuidv4 } = require('uuid'); // You would add this line after npm install uuid
 
 exports.register = async ( { username, email, password } ) => {
     const existingUser = await User.findOne( { email } )
@@ -45,8 +46,8 @@ exports.login = async ( { email, password } ) => {
     // Plain object for JWT
     const payload = {
         id: user._id.toString(),
-        email: user.email,
-        username: user.username
+        username: user.username,
+        // jti: uuidv4() // Add JWT ID claim - uncomment and use uuid after installing
     };
 
     const token = generateToken( payload );
@@ -57,7 +58,7 @@ exports.login = async ( { email, password } ) => {
         user: payload
     };
 };
-  
+
 
 
 exports.getall = async () => {
