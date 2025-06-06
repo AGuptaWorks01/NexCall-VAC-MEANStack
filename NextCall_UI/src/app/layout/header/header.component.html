@@ -1,33 +1,33 @@
 <div>
-    <!-- Main content -->
+    <!-- Main Content -->
     <div class="flex-1 flex flex-col">
         <!-- Navbar -->
-        <nav class="flex justify-between items-center p-3 bg-gray-200 shadow">
+        <nav class="flex justify-between items-center p-3 bg-gray-200 shadow rounded-md">
+            <!-- Title -->
             <h1 class="text-lg font-bold cursor-grabbing">Next-Call</h1>
 
-
-            <!-- Profile Dropdown -->
-            <div class="relative inline-block text-left">
-                <button #profileButton (click)="toggleDropdown()"
-                    class="inline-flex items-center px-2 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-full shadow-sm hover:bg-gray-50 focus:outline-none">
-                    <i class="fa-solid fa-house"></i>
+            <!-- Angular Material Menu (Styled) -->
+            <div>
+                <button mat-icon-button [matMenuTriggerFor]="profileMenu" aria-label="User profile menu"
+                    class="text-gray-700">
+                    <mat-icon>account_circle</mat-icon>
                 </button>
 
-                <div *ngIf="dropdownOpen" #profileDropdown
-                    class="absolute right-0 z-10 mt-2 w-44 origin-top-right bg-white border border-gray-200 divide-y divide-gray-100 rounded-md shadow-lg">
-                    <a class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                <mat-menu #profileMenu="matMenu" [overlapTrigger]="false">
+                    <button mat-menu-item disabled>
+                        <mat-icon>person</mat-icon>
+                        <span>{{ username | titlecase }}</span>
+                    </button>
+                    <button mat-menu-item>
+                        <mat-icon>settings</mat-icon>
+                        <span>Settings</span>
+                    </button>
+                    <button mat-menu-item (click)="logout()">
+                        <mat-icon class="text-red-600">logout</mat-icon>
+                        <span class="text-red-600">Logout</span>
+                    </button>
 
-                        <i class="fa-solid fa-user"> {{ username | titlecase }}</i>
-
-                    </a>
-                    <a class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"><i class="fa-solid fa-gear">
-                            Settings</i></a>
-                    <a (click)="logout()" class="block px-4 py-2 text-sm text-red-600 hover:bg-red-100 cursor-pointer">
-                        <i class="fa-solid fa-right-from-bracket">&nbsp; Logout</i>
-
-                    </a>
-
-                </div>
+                </mat-menu>
             </div>
         </nav>
     </div>

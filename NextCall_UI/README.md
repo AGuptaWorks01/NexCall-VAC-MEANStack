@@ -42,7 +42,16 @@ realtime-call-app/
 │   │   │   │   └── call.module.ts
 │   │   │   └── 📁 settings/             # Theme, profile, notifications, etc.
 │   │   │       └── settings.module.ts
-│   │
+│   │   │   └── 📁 chat/                 # ✅ NEW: Chat feature module
+│   │   │       ├── 📁 services/
+│   │   │       │   └── chat.service.ts         # Handles socket connection and chat logic
+│   │   │       ├── 📁 single-chat/
+│   │   │       │   ├── single-chat.component.ts
+│   │   │       │   └── single-chat.component.html
+│   │   │       ├── 📁 group-chat/
+│   │   │       │   ├── group-chat.component.ts
+│   │   │       │   └── group-chat.component.html
+│   │   │       └── chat.module.ts
 │   │   ├── 📁 layout/                   # UI layout components
 │   │   │   ├── header/
 │   │   │   ├── sidebar/

@@ -1,7 +1,5 @@
 import {Component, inject} from '@angular/core';
 import {Router, RouterOutlet} from '@angular/router';
-import {AuthService} from '../../../core/services/auth.service';
-import {ToastrService} from 'ngx-toastr';
 import { HeaderComponent } from "../../../layout/header/header.component";
 import { SidebarComponent } from "../../../layout/sidebar/sidebar.component";
 
