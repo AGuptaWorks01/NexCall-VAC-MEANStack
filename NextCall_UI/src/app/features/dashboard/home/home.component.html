@@ -1,9 +1,12 @@
-<app-header></app-header>
+<div class="flex flex-col h-screen overflow-hidden">
+    <app-header></app-header>
 
-<div class="flex min-h-screen">
-    <app-sidebar></app-sidebar>
+    <!-- Option 3: If you need responsive sidebar -->
+    <div class="flex flex-1 min-h-0">
+        <app-sidebar class="flex-shrink-0"></app-sidebar>
 
-    <main class="flex-1 p-2">
-        <router-outlet></router-outlet>
-    </main>
+        <main class="flex-1 p-2 overflow-auto">
+            <router-outlet></router-outlet>
+        </main>
+    </div>
 </div>

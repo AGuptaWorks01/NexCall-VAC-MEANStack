@@ -82,14 +82,6 @@ const authLimiter = rateLimit( {
     message: { error: 'Too many login attempts from this IP, please try again after 15 minutes' }
 } );
 
-const generalApiLimiter = rateLimit( {
-    windowMs: 1 * 60 * 1000, // 1 minute
-    max: 200, // Limit each IP to 200 general API requests per windowMs
-    standardHeaders: true,
-    legacyHeaders: false,
-    message: { error: 'Too many requests from this IP, please try again after a minute' }
-} );
-
 app.use( '/api/auth', authLimiter ); // Apply auth limiter to auth routes
 // app.use('/api/', generalApiLimiter); // Apply general limiter to other /api/ routes. Be cautious with WebSocket upgrade requests.
 

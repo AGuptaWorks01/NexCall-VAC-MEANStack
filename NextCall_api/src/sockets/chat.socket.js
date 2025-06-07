@@ -1,81 +1,99 @@
-const ChatService = require('../services/chat.service');
+const ChatService = require( '../services/chat.service' );
+const User = require( '../models/user.model' );
 
-const registerChatSocket = (io, socket) => {
+const registerChatSocket = ( io, socket ) => {
     // Register user
-    socket.on("register", (username) => {
-        const users = ChatService.addUser(socket.id, username);
-        console.log(`${username} connected with socket ID ${socket.id}`);
-        
+    socket.on( "register", async ( username ) => {
+        const users = ChatService.addUser( socket.id, username );
+        console.log( `${ username } connected with socket ID ${ socket.id }` );
+
         // Send updated user list and group list to all clients
-        io.emit("userList", users);
-        io.emit("groupList", ChatService.getAllGroups());
-    });
+        io.emit( "userList", users );
+        io.emit( "groupList", ChatService.getAllGroups() );
+
+        try
+        {
+            // Get ALL users from the database
+            const allUsers = await User.find( {}, 'username email' );
+            // Send the full user list ONLY to the user who just connected
+            socket.emit( "allUserList", allUsers );
+        } catch ( error )
+        {
+            console.error( "Error fetching all users:", error );
+            // Optionally emit an error back to the client
+            socket.emit( "error", { message: "Could not fetch user list." } );
+        }
+    } );
 
     // Handle private message
-    socket.on("private message", ({ to, message }) => {
-        const fromUser = ChatService.users[socket.id];
-        if (fromUser && to && ChatService.users[to]) {
-            io.to(to).emit("private message", {
+    socket.on( "private message", ( { to, message } ) => {
+        const fromUser = ChatService.users[ socket.id ];
+        if ( fromUser && to && ChatService.users[ to ] )
+        {
+            io.to( to ).emit( "private message", {
                 from: fromUser.username,
                 message,
-            });
+            } );
         }
-    });
+    } );
 
     // Create group
-    socket.on("create group", (groupName) => {
-        const group = ChatService.createGroup(groupName, socket.id);
-        io.emit("groupList", ChatService.getAllGroups());
-        socket.join(group.id);
-    });
+    socket.on( "create group", ( groupName ) => {
+        const group = ChatService.createGroup( groupName, socket.id );
+        io.emit( "groupList", ChatService.getAllGroups() );
+        socket.join( group.id );
+    } );
 
     // Join group
-    socket.on("join group", (groupId) => {
-        if (ChatService.joinGroup(groupId, socket.id)) {
-            socket.join(groupId);
-            const username = ChatService.users[socket.id]?.username;
-            io.to(groupId).emit("group message", {
+    socket.on( "join group", ( groupId ) => {
+        if ( ChatService.joinGroup( groupId, socket.id ) )
+        {
+            socket.join( groupId );
+            const username = ChatService.users[ socket.id ]?.username;
+            io.to( groupId ).emit( "group message", {
                 type: "system",
-                message: `${username} joined the group`
-            });
-            io.emit("groupList", ChatService.getAllGroups());
+                message: `${ username } joined the group`
+            } );
+            io.emit( "groupList", ChatService.getAllGroups() );
         }
-    });
+    } );
 
     // Leave group
-    socket.on("leave group", (groupId) => {
-        if (ChatService.leaveGroup(groupId, socket.id)) {
-            socket.leave(groupId);
-            const username = ChatService.users[socket.id]?.username;
-            io.to(groupId).emit("group message", {
+    socket.on( "leave group", ( groupId ) => {
+        if ( ChatService.leaveGroup( groupId, socket.id ) )
+        {
+            socket.leave( groupId );
+            const username = ChatService.users[ socket.id ]?.username;
+            io.to( groupId ).emit( "group message", {
                 type: "system",
-                message: `${username} left the group`
-            });
-            io.emit("groupList", ChatService.getAllGroups());
+                message: `${ username } left the group`
+            } );
+            io.emit( "groupList", ChatService.getAllGroups() );
         }
-    });
+    } );
 
     // Group message
-    socket.on("group message", ({ groupId, message }) => {
-        const fromUser = ChatService.users[socket.id];
-        if (fromUser && ChatService.getGroupMembers(groupId).includes(socket.id)) {
+    socket.on( "group message", ( { groupId, message } ) => {
+        const fromUser = ChatService.users[ socket.id ];
+        if ( fromUser && ChatService.getGroupMembers( groupId ).includes( socket.id ) )
+        {
             const messageObj = {
                 type: "message",
                 from: fromUser.username,
                 message,
                 timestamp: new Date()
             };
-            ChatService.addMessageToGroup(groupId, messageObj);
-            io.to(groupId).emit("group message", messageObj);
+            ChatService.addMessageToGroup( groupId, messageObj );
+            io.to( groupId ).emit( "group message", messageObj );
         }
-    });
+    } );
 
     // Handle disconnect
-    socket.on("disconnect", () => {
-        const users = ChatService.removeUser(socket.id);
-        io.emit("userList", users);
-        io.emit("groupList", ChatService.getAllGroups());
-    });
+    socket.on( "disconnect", () => {
+        const users = ChatService.removeUser( socket.id );
+        io.emit( "userList", users );
+        io.emit( "groupList", ChatService.getAllGroups() );
+    } );
 };
 
 module.exports = registerChatSocket; 
