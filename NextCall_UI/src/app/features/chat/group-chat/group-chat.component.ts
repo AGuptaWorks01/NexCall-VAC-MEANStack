@@ -16,7 +16,7 @@ import {SocketService} from '../../../core/services/socket.service';
   templateUrl: './group-chat.component.html',
   styleUrls: ['./group-chat.component.scss']
 } )
-export class GroupChatComponent implements OnInit, OnDestroy {
+export class GroupChatComponent implements OnInit {
   isSidebarOpen: boolean=true; // For responsive sidebar
   groups: any[]=[];
   selectedGroup: any=null;
@@ -24,14 +24,20 @@ export class GroupChatComponent implements OnInit, OnDestroy {
   messageContent: string='';
   newGroupName: string='';
   currentUser: string|null=null;
+  isAdmin: boolean=false; // To track admin status
+  joinedGroupIds: Set<string>=new Set<string>(); // Track joined groups
 
   constructor ( private socketService: SocketService ) {}
 
   ngOnInit(): void {
-    this.currentUser=localStorage.getItem( 'username' );
-    // No need to register again if already done in single-chat, but good practice if this is a standalone entry point.
-    if ( this.currentUser ) {
-      this.socketService.register( this.currentUser );
+    const storedUser=localStorage.getItem( 'user' ); // Assuming user object is stored as 'user'
+    if ( storedUser ) {
+      const user=JSON.parse( storedUser );
+      this.currentUser=user.username;
+      this.isAdmin=user.role==='admin';
+      if ( this.currentUser ) {
+        this.socketService.register( this.currentUser );
+      }
     }
 
     this.socketService.getGroupList().subscribe( ( groups: any ) => {
@@ -40,14 +46,13 @@ export class GroupChatComponent implements OnInit, OnDestroy {
 
     this.socketService.getGroupMessages().subscribe( ( message: any ) => {
       if ( this.selectedGroup&&message.groupId===this.selectedGroup.id ) {
+        // If it's a system message about joining, update our joined status
+        if ( message.type==='system'&&message.message.includes( 'joined the group' ) ) {
+          this.joinedGroupIds.add( message.groupId );
+        }
         this.messages.push( message );
       }
     } );
-  }
-
-  ngOnDestroy(): void {
-    // Decide if you want to leave all groups or disconnect socket on component destroy
-    // For now, we'll leave it to the user to manually leave groups.
   }
 
   toggleSidebar(): void {
@@ -65,17 +70,36 @@ export class GroupChatComponent implements OnInit, OnDestroy {
     }
   }
 
+  joinGroup( group: any ): void {
+    this.socketService.joinGroup( group.id );
+    this.joinedGroupIds.add( group.id );
+    this.selectGroup( group ); // Automatically select group after joining
+  }
+
+  leaveGroup( group: any ): void {
+    this.socketService.leaveGroup( group.id );
+    this.joinedGroupIds.delete( group.id );
+    // If the user leaves the currently selected group, deselect it
+    if ( this.selectedGroup&&this.selectedGroup.id===group.id ) {
+      this.selectedGroup=null;
+      this.messages=[];
+    }
+  }
+
   selectGroup( group: any ): void {
+    // Only allow selecting the group if the user has joined it.
+    if ( !this.joinedGroupIds.has( group.id ) ) {
+      console.log( "You must join the group to see messages." );
+      return; // Early exit
+    }
+
     if ( this.selectedGroup&&this.selectedGroup.id!==group.id ) {
-      // We are switching from one group to another
-      this.socketService.leaveGroup( this.selectedGroup.id );
+      // Switching groups doesn't require leaving/rejoining if already a member.
     }
     this.selectedGroup=group;
     this.messages=[]; // Clear messages from previous group
-    this.socketService.joinGroup( group.id );
 
-    // Close sidebar on mobile after selecting a chat
-    if ( window.innerWidth<768 ) { // md breakpoint
+    if ( window.innerWidth<768 ) {
       this.closeSidebar();
     }
   }
@@ -85,6 +109,17 @@ export class GroupChatComponent implements OnInit, OnDestroy {
       this.socketService.sendGroupMessage( this.selectedGroup.id, this.messageContent );
       // The message will be added to the messages array via the socket listener to avoid duplication.
       this.messageContent='';
+    }
+  }
+
+  deleteGroup( group: any ): void {
+    if ( !this.isAdmin ) {
+      console.error( "You are not authorized to delete this group." );
+      return;
+    }
+    // Optional: Add a confirmation dialog before deleting
+    if ( confirm( `Are you sure you want to delete the group "${ group.name }"?` ) ) {
+      this.socketService.deleteGroup( group.id );
     }
   }
 }

@@ -1,41 +1,38 @@
 require( 'dotenv' ).config(); // Load environment variables from .env file
 
-const cluster = require( 'cluster' );
-const os = require( 'os' )
 const http = require( "http" );
 const app = require( "./app" )
 const { setupSocket } = require( "./congif/socket.config" )
 const connectToMongo = require( "./congif/db.config" );
+const User = require( './models/user.model' ); // Import User model
 
 const PORT = process.env.PORT || 3000;
-const numCPUS = os.cpus().length;
 
-if ( cluster.isMaster )
-{
-    console.log( `Master ${ process.pid } is running` );
-
-    for ( let i = 0; i < numCPUS; i++ )
+const startServer = async () => {
+    try
     {
-        cluster.fork()
+        // Connect to DB
+        await connectToMongo();
+        console.log( "MongoDB connected successfully." );
+
+        // Reset all users to offline on server start
+        const result = await User.updateMany( {}, { $set: { status: 0 } } );
+        console.log( `Reset status for ${ result.modifiedCount } users to offline.` );
+
+        // Create HTTP server with socket support
+        const server = http.createServer( app );
+
+        setupSocket( server ); // Attach WebSocket
+
+        server.listen( PORT, () => {
+            console.log( `Server is running at http://localhost:${ PORT }` );
+        } );
+
+    } catch ( error )
+    {
+        console.error( "Failed to start server:", error );
+        process.exit( 1 );
     }
+};
 
-    cluster.on( 'exit', ( worker, code, signal ) => {
-        console.log( `Worker ${ worker.process.pid } died. Restarting...` );
-        cluster.fork();
-    } );
-} else
-{
-    // Worker processes
-
-    // Connect to DB only once per process
-    connectToMongo();
-
-    // Create HTTP server with socket support
-    const server = http.createServer( app );
-
-    setupSocket( server ); // Attach WebSocket
-
-    server.listen( PORT, () => {
-        console.log( `Worker ${ process.pid } is running at http://localhost:${ PORT }` );
-    } );
-}
+startServer();

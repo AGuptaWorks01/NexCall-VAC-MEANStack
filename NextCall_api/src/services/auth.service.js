@@ -1,4 +1,5 @@
 const User = require( '../models/user.model' );
+const Message = require( '../models/message.model' ); // Import message model
 const { hasdPassword, comparePassword } = require( '../utils/hash' )
 const { generateToken } = require( '../utils/jwt' )
 // const { v4: uuidv4 } = require('uuid'); // You would add this line after npm install uuid
@@ -59,7 +60,16 @@ exports.login = async ( { email, password } ) => {
     };
 };
 
+exports.getChatHistory = async ( currentUserUsername, otherUserUsername ) => {
+    const messages = await Message.find( {
+        $or: [
+            { from: currentUserUsername, to: otherUserUsername },
+            { from: otherUserUsername, to: currentUserUsername }
+        ]
+    } ).sort( { timestamp: 'asc' } );
 
+    return messages;
+};
 
 exports.getall = async () => {
     const user = await User.find();

@@ -27,7 +27,7 @@
         <div class="p-2 border-b border-gray-200">
             <h2 class="text-lg font-semibold mb-2">Create New Group</h2>
             <div class="flex items-center gap-2">
-                <mat-form-field  class="w-full">
+                <mat-form-field class="w-full">
                     <mat-label>Group Name</mat-label>
                     <input matInput [(ngModel)]="newGroupName" (keyup.enter)="createGroup()"
                         placeholder="My Awesome Group">
@@ -43,12 +43,31 @@
             <mat-card-title class="text-lg font-semibold">All Groups</mat-card-title>
             <mat-card-content class="overflow-y-auto max-h-[calc(100%-3rem)]">
                 <ul class="list-none p-0 m-0">
-                    <li *ngFor="let group of groups" (click)="selectGroup(group)"
-                        [ngClass]="{'bg-blue-100 text-blue-700': selectedGroup?.id === group.id, 'hover:bg-gray-100': selectedGroup?.id !== group.id}"
-                        class="p-3 cursor-pointer flex justify-between items-center rounded-lg mb-2">
-                        <span class="font-medium">{{ group.name }}</span>
-                        <span class="text-sm bg-gray-200 text-gray-700 rounded-full px-2 py-1">{{ group.memberCount
-                            }}</span>
+                    <li *ngFor="let group of groups" [ngClass]="{'bg-blue-100': selectedGroup?.id === group.id}"
+                        class="p-3 rounded-lg mb-2 flex flex-col">
+
+                        <div (click)="selectGroup(group)"
+                            [ngClass]="{'cursor-pointer': joinedGroupIds.has(group.id), 'cursor-not-allowed': !joinedGroupIds.has(group.id)}"
+                            class="flex justify-between items-center w-full">
+                            <span class="font-medium">{{ group.name }}</span>
+                            <span class="text-sm bg-gray-200 text-gray-700 rounded-full px-2 py-1">{{ group.memberCount
+                                }}</span>
+                        </div>
+
+                        <div class="flex items-center justify-end gap-2 mt-2">
+                            <button *ngIf="!joinedGroupIds.has(group.id)" (click)="joinGroup(group)" mat-stroked-button
+                                color="primary" class="!min-w-[auto] !px-2 !py-1 !text-xs">
+                                Join
+                            </button>
+                            <button *ngIf="joinedGroupIds.has(group.id)" (click)="leaveGroup(group)" mat-stroked-button
+                                color="warn" class="!min-w-[auto] !px-2 !py-1 !text-xs">
+                                Leave
+                            </button>
+                            <button *ngIf="isAdmin" (click)="deleteGroup(group); $event.stopPropagation();"
+                                mat-icon-button color="warn" class="!w-6 !h-6 !leading-6">
+                                <mat-icon class="!text-base">delete_forever</mat-icon>
+                            </button>
+                        </div>
                     </li>
                 </ul>
                 <div *ngIf="groups.length === 0" class="p-4 text-center text-gray-500">

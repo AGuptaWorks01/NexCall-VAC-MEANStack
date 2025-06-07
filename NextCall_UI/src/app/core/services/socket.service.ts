@@ -15,8 +15,8 @@ export class SocketService {
   }
 
   // Method to send a private message
-  sendPrivateMessage( to: string, message: string ) {
-    this.socket.emit( 'private message', {to, message} );
+  sendPrivateMessage( toUsername: string, message: string ) {
+    this.socket.emit( 'private message', {toUsername, message} );
   }
 
   // Listen for the list of users
@@ -57,6 +57,19 @@ export class SocketService {
 
   getGroupMessages(): Observable<any> {
     return this.socket.fromEvent( 'group message' );
+  }
+
+  deleteGroup( groupId: string ) {
+    this.socket.emit( 'delete group', groupId );
+  }
+
+  // CHAT HISTORY METHODS
+  requestChatHistory( otherUsername: string ) {
+    this.socket.emit( 'get chat history', {otherUsername} );
+  }
+
+  getChatHistory(): Observable<any> {
+    return this.socket.fromEvent( 'chat history' );
   }
 
   // Disconnect the socket
