@@ -14,7 +14,6 @@ realtime-call-app/
 │   │   │   ├── models/                  # Global interfaces & enums
 │   │   │   │   ├── user.model.ts
 │   │   │   │   └── call.model.ts
-│   │   │   └── core.module.ts
 │   │
 │   │   ├── 📁 shared/                    # Reusable UI components, pipes, and directives
 │   │   │   ├── components/
@@ -24,14 +23,12 @@ realtime-call-app/
 │   │   │   │   └── duration.pipe.ts
 │   │   │   ├── directives/
 │   │   │   │   └── autofocus.directive.ts
-│   │   │   └── shared.module.ts
 │   │
 │   │   ├── 📁 features/                  # Feature modules
 │   │   │   ├── 📁 auth/                  # Login/Register/OTP/etc.
 │   │   │   │   ├── login/
 │   │   │   │   ├── register/
 │   │   │   │   ├── services/
-│   │   │   │   └── auth.module.ts
 │   │   │   ├── 📁 dashboard/            # Home dashboard after login
 │   │   │   │   └── dashboard.module.ts
 │   │   │   ├── 📁 call/                 # Main calling logic
@@ -39,7 +36,6 @@ realtime-call-app/
 │   │   │   │   ├── single-call/
 │   │   │   │   ├── call-controls/
 │   │   │   │   ├── services/
-│   │   │   │   └── call.module.ts
 │   │   │   └── 📁 settings/             # Theme, profile, notifications, etc.
 │   │   │       └── settings.module.ts
 │   │   │   └── 📁 chat/                 # ✅ NEW: Chat feature module
@@ -51,16 +47,12 @@ realtime-call-app/
 │   │   │       ├── 📁 group-chat/
 │   │   │       │   ├── group-chat.component.ts
 │   │   │       │   └── group-chat.component.html
-│   │   │       └── chat.module.ts
 │   │   ├── 📁 layout/                   # UI layout components
 │   │   │   ├── header/
 │   │   │   ├── sidebar/
 │   │   │   ├── theme-switcher/
-│   │   │   └── layout.module.ts
 │   │
-│   │   ├── app-routing.module.ts
 │   │   └── app.component.ts
-│   │   └── app.module.ts
 │
 ├── 📁 assets/
 │   ├── i18n/                            # Translations
