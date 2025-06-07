@@ -13,6 +13,7 @@ export class SocketService {
   constructor ( private socket: Socket ) {
     // Listen for the raw socket event and update the BehaviorSubject
     this.socket.fromEvent( 'allUserList' ).subscribe( ( users: any ) => {
+      
       this.allUsersSubject.next( users );
     } );
   }
