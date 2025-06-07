@@ -1,13 +1,27 @@
 import {Injectable} from '@angular/core';
 import {Socket} from 'ngx-socket-io';
-import {Observable} from 'rxjs';
+import {Observable, BehaviorSubject} from 'rxjs';
 
 @Injectable( {
   providedIn: 'root'
 } )
 export class SocketService {
 
-  constructor ( private socket: Socket ) {}
+  // Create a private BehaviorSubject to hold the latest user list
+  private allUsersSubject=new BehaviorSubject<any[]>( [] );
+
+  constructor ( private socket: Socket ) {
+    // Listen for the raw socket event and update the BehaviorSubject
+    this.socket.fromEvent( 'allUserList' ).subscribe( ( users: any ) => {
+      this.allUsersSubject.next( users );
+    } );
+  }
+
+  // Expose a public observable for components to subscribe to.
+  // This will give them the latest list immediately upon subscription.
+  getAllUsers(): Observable<any[]> {
+    return this.allUsersSubject.asObservable();
+  }
 
   // Method to register a user
   register( username: string ) {

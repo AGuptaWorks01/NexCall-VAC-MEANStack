@@ -17,7 +17,7 @@ import {AuthService} from '../../../core/services/auth.service';
   templateUrl: './single-chat.component.html',
   styleUrl: './single-chat.component.scss'
 } )
-export class SingleChatComponent implements OnInit {
+export class SingleChatComponent implements OnInit, OnDestroy {
   isSidebarOpen: boolean=true;
   combinedUsers: any[]=[];
   messages: any[]=[];
@@ -31,11 +31,12 @@ export class SingleChatComponent implements OnInit {
   ngOnInit(): void {
     this.currentUser=localStorage.getItem( 'username' );
 
-    // The registration is now handled by the parent HomeComponent.
-    // We just need to listen for the user list updates.
-    this.socketService.getAllUsersList().subscribe( ( users: any[] ) => {
-      this.combinedUsers=users.filter( user => user.username!==this.currentUser );
-      this.cdr.detectChanges();
+    // Subscribe to the reliable, stateful user list from the service
+    this.socketService.getAllUsers().subscribe( ( users: any[] ) => {
+      if ( users ) {
+        this.combinedUsers=users.filter( user => user.username!==this.currentUser );
+        this.cdr.detectChanges();
+      }
     } );
 
     this.socketService.getChatHistory().subscribe( ( history: any ) => {
@@ -94,5 +95,9 @@ export class SingleChatComponent implements OnInit {
     } else {
       console.log( 'Cannot send message, user is offline or no user selected.' );
     }
+  }
+
+  ngOnDestroy(): void {
+    // Cleanup code if needed
   }
 }
